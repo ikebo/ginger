@@ -8,6 +8,8 @@ from contextlib import contextmanager
 from flask_sqlalchemy import SQLAlchemy as _SQLAlchemy, BaseQuery
 from flask import current_app
 
+from app.libs.error_code import NotFound
+
 
 class SQLAlchemy(_SQLAlchemy):
     @contextmanager
@@ -28,6 +30,18 @@ class Query(BaseQuery):
             kwargs['status'] = 1
         return super(Query, self).filter_by(**kwargs)
 
+    def get_or_404(self, ident):
+        rv = self.get(ident)
+        if not rv:
+            raise NotFound()
+        return rv
+
+    def first_or_404(self):
+        rv = self.first()
+        if not rv:
+            raise NotFound()
+        return rv
+
 
 db = SQLAlchemy(query_class=Query)
 
@@ -40,6 +54,9 @@ class Base(db.Model):
 
     def __init__(self):
         self.create_time = int(datetime.now().timestamp())
+
+    def __getitem__(self, item):
+        return getattr(self, item)
 
     @property
     def create_datetime(self):

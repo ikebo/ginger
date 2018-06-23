@@ -2,6 +2,7 @@
   Created by kebo on 2018/6/21
 """
 
+
 class Redprint:
 
     def __init__(self, name):
@@ -10,8 +11,9 @@ class Redprint:
 
     def route(self, rule, **options):
         def decorator(f):
-            self.mound.append((f,rule,options))
+            self.mound.append((f, rule, options))
             return f
+
         return decorator
 
     def register(self, bp, url_prefix=None):
